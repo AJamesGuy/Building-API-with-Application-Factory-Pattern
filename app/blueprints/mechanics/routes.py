@@ -22,7 +22,7 @@ def create_mechanic():
     db.session.commit()
     return mechanic_schema.jsonify(new_mechanic), 201
 
-# get all mechanics
+# read all mechanics
 @mechanics_bp.route('', methods=['GET'])
 @limiter.limit("10 per minute")
 def get_mechanics():
@@ -32,7 +32,7 @@ def get_mechanics():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
+# update mechanics
 @mechanics_bp.route('/<int:mechanic_id>', methods=['PUT'])
 def update_mechanic(mechanic_id):
     mechanic = db.session.get(Mechanics, mechanic_id)
@@ -50,6 +50,8 @@ def update_mechanic(mechanic_id):
     db.session.commit()
     return mechanic_schema.jsonify(mechanic), 200
 
+
+# delete a mechanic
 @mechanics_bp.route('/<int:mechanic_id>', methods=['DELETE'])
 def delete_mechanic(mechanic_id):
     mechanic = db.session.get(Mechanics, mechanic_id)

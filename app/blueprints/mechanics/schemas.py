@@ -1,9 +1,9 @@
 from app.extensions import ma
-from app.models import Mechanics
+from app.models import Mechanic
 
 class MechanicSchema(ma.SQLAlchemySchema):
     class Meta:
-        model = Mechanics
+        model = Mechanic
 
 mechanic_schema = MechanicSchema()
 mechanics_schema = MechanicSchema(many=True)

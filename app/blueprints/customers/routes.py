@@ -2,7 +2,7 @@ from . import customers_bp
 from . schemas import customer_schema, customers_schema
 from flask import request, jsonify
 from marshmallow import ValidationError
-from app.models import Customers, db
+from app.models import Customer, db
 from app.extensions import limiter, cache
 from sqlalchemy import select
 
@@ -16,7 +16,7 @@ def create_customer():
     except ValidationError as err:
         return jsonify(err.messages), 400
 
-    new_customer = Customers(**data)
+    new_customer = Customer(**data)
     db.session.add(new_customer)
     db.session.commit()
     return customer_schema.jsonify(new_customer), 201
@@ -26,15 +26,15 @@ def create_customer():
 @limiter.limit("10 per minute")
 def get_customers():
     try:
-        customers = db.session.query(Customers).all()
+        customers = db.session.query(Customer).all()
         return customers_schema.jsonify(customers), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
 # update customer
-@customers_bp.route('/<int:customer_id>', methods=['PUT'])
+@customers_bp.route('/<int:customer_id>/update-customer', methods=['PUT'])
 def update_customer(customer_id):
-    customer = db.session.get(Customers, customer_id)
+    customer = db.session.get(Customer, customer_id)
     if not customer:
         return jsonify({"error": "Customer not found"}), 404
 
@@ -50,9 +50,9 @@ def update_customer(customer_id):
     return customer_schema.jsonify(customer), 200
 
 # delete a customer
-@customers_bp.route('/<int:customer_id>', methods=['DELETE'])
+@customers_bp.route('/<int:customer_id>/delete-customer', methods=['DELETE'])
 def delete_customer(customer_id):
-    customer = db.session.get(Customers, customer_id)
+    customer = db.session.get(Customer, customer_id)
     if not customer:
         return jsonify({"error": "Customer not found"}), 404
     

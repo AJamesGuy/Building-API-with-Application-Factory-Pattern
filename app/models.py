@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-from sqlalchemy import String, Date, INTEGER, TEXT, FLOAT
+from sqlalchemy import String, Date, Integer, Text, Float, ForeignKey
 from datetime import date
 
 app = Flask(__name__)
@@ -17,7 +17,7 @@ db = SQLAlchemy(model_class = Base)
  
 db.init_app(app)
 
-class Customers(Base):
+class Customer(Base):
     __tablename__ = "customers"
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -27,36 +27,38 @@ class Customers(Base):
     password: Mapped[str] = mapped_column(String(80), nullable=False)
     phone: Mapped[str] = mapped_column(String(80), nullable=False)
 
-    service_tickets: Mapped[list['Service_Tickets']] = relationship('Service_Tickets', back_populates='customers')
+    service_tickets: Mapped[list['Service_Ticket']] = relationship('Service_Tickets', back_populates='customer')
 
-class Service_Tickets(Base):
+class Service_Ticket(Base):
     __tablename__ = "service_tickets"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    customer_id: Mapped[int] = mapped_column(Foreign_Key=True)
-    vin: Mapped[int] = mapped_column(INTEGER, nullable=False, unique=True)
+    customer_id: Mapped[int] = mapped_column(ForeignKey(customers.id), nullable=False)
+    vin: Mapped[int] = mapped_column(Integer, nullable=False, unique=True)
     mechanics: Mapped[str] = mapped_column(String(80), nullable=False)
-    service_desc: Mapped[str] = mapped_column(TEXT, nullable=False)
-    price: Mapped[int] = mapped_column(INTEGER, nullable=False)
+    service_desc: Mapped[str] = mapped_column(Text, nullable=False)
+    price: Mapped[Float] = mapped_column(Float, nullable=False)
 
-    customers: Mapped['Customers'] = relationship('Customers', back_populates='service_tickets')
-    mechanic_service: Mapped[list['Mechanics']] = relationship('')
+    customers: Mapped['Customer'] = relationship('Customer', back_populates='service_tickets')
+    mechanics: Mapped[list['Mechanic']] = relationship('Mechanic', secondary="mechanics_service_tickets", back_populates="service_tickets")
 
-class Mechanics_Service_Tickets(Base):
-    __tablename__ = "mechanics_service_tickets"
+mechanics_service_tickets = db.Table(
+    "mechanics_service_tickets",
+    db.Column("tickets_id", ForeignKey("service_tickets.id"), primary_key=True),
+    db.Column("mechanics_id", ForeignKey("mechanics.id"), primary_key=True)
+    )
 
-    ticket_id: Mapped[int] = mapped_column(Foreign_Key=True)
-    mechanics_id: Mapped[int] = mapped_column(Foreign_Key=True)
-
-
-class Mechanics(Base):
+class Mechanic(Base):
     __tablename__ = "mechanics"
 
     id: Mapped[int] = mapped_column(Primary_Key=True)
     first_name: Mapped[str] = mapped_column(String(80), nullable=False)
     last_name: Mapped[str] = mapped_column(String(80), nullable=False)
-    email: Mapped[str] = mapped_column(String(80), nullable=False, unique=True)
-    address: Mapped[str] = mapped_column(String(80), nullable=False)
-    schedule: Mapped[str] = mapped_column(String(80), nullable=False)
-    salary: Mapped[int] = mapped_column(FLOAT, nullable=True)
+    email: Mapped[str] = mapped_column(String(120), nullable=False, unique=True)
+    address: Mapped[str] = mapped_column(String(200), nullable=False)
+    schedule: Mapped[str] = mapped_column(String(100), nullable=False)
+    salary: Mapped[float] = mapped_column(Float, nullable=True)
+
+    service_tickets: Mapped[list["Service_Ticket"]] = relationship("Service_Ticket", secondary="mechanics_service_tickets", back_populates="mechanics")
+
 

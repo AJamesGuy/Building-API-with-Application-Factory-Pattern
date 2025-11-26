@@ -9,7 +9,7 @@ from sqlalchemy import select
 # ---------- CRUD operations for Customers ----------
 
 # create a new customer
-@customers_bp.route('', methods=['POST'])
+@customers_bp.route('/', methods=['POST'])
 def create_customer():
     try:
         data = customer_schema.load(request.json)
@@ -22,7 +22,7 @@ def create_customer():
     return customer_schema.jsonify(new_customer), 201
 
 # read all customers
-@customers_bp.route('', methods=['GET'])
+@customers_bp.route('/', methods=['GET'])
 @limiter.limit("10 per minute")
 def get_customers():
     try:

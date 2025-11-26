@@ -10,10 +10,10 @@ from sqlalchemy import select
 
 
 # create a new mechanic
-@mechanics_bp.route('', methods=['POST'])
+@mechanics_bp.route('/', methods=['POST'])
 def create_mechanic():
     try:
-        data = mechanic_schema.load(request.json) # The JSON data is inserted in postman as a test for front end user input. 
+        data = mechanic_schema.load(request.json) # The JSON data is inserted in postman as an example of front end user input. 
     except ValidationError as err:
         return jsonify(err.messages), 400
 
@@ -23,7 +23,7 @@ def create_mechanic():
     return mechanic_schema.jsonify(new_mechanic), 201
 
 # read all mechanics
-@mechanics_bp.route('', methods=['GET'])
+@mechanics_bp.route('/', methods=['GET'])
 @limiter.limit("10 per minute")
 def get_mechanics():
     try:

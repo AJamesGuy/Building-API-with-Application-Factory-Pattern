@@ -8,7 +8,7 @@ from sqlalchemy import select
 
 # ---------- CRUD operations for Mechanics ----------
 # create a new service_ticket
-@service_tickets_bp.route('', methods=['POST'])
+@service_tickets_bp.route('/', methods=['POST'])
 def create_service_ticket():
     try:
         data = service_ticket_schema.load(request.json) # data is now the JSON input from the front end
@@ -21,7 +21,7 @@ def create_service_ticket():
     return service_ticket_schema.jsonify(new_service_ticket), 201 # Serialize data for front end usability.
 
 # read all service_tickets
-@service_tickets_bp.route('', methods=['GET'])
+@service_tickets_bp.route('/', methods=['GET'])
 @limiter.limit("10 per minute")
 def get_service_tickets():
     try:
@@ -32,7 +32,7 @@ def get_service_tickets():
     
 
 # assign a mechanic to a service ticket
-@service_tickets_bp.route('/<int:ticket_id?/assign-mechanic/<int:mechanic_id>', methods=['PUT'])
+@service_tickets_bp.route('/<int:ticket_id>/assign-mechanic/<int:mechanic_id>', methods=['PUT'])
 def assign_mechanic(ticket_id, mechanic_id):
     ticket = db.session.get(Service_Ticket, ticket_id) # Query ticket by ticket_id specified in request 
     if not ticket:
@@ -47,7 +47,7 @@ def assign_mechanic(ticket_id, mechanic_id):
     ticket.mechanics.append(mechanic) # if mechanic (selected by id) is not assigned to the ticket (selected by id), append the mechanic in the Service_Ticket mechanics relationship list.
     db.session.commit() # commit changes
 
-    return service_ticket_schema.jsonify(ticket), 200 #Serialize python ticket object and return JSON to front end.
+    return service_ticket_schema.jsonify(ticket), 200 #Serialize python ticket object and return ticket to front end.
 
 
 # remove a mechanic from a service ticket
@@ -69,18 +69,3 @@ def remove_mechanic(ticket_id, mechanic_id):
 
     return service_ticket_schema.jsonify(ticket), 200 # Serialize updated service-ticket-python-object -> JSON and return to front end
     
-
-# Added delete route
-# delete a service_ticket
-@service_tickets_bp.route('/<int:service_ticket_id>', methods=['DELETE'])
-def delete_service_ticket(service_ticket_id):
-    service_ticket = db.session.get(Service_Ticket, service_ticket_id)
-    if not service_ticket:
-        return jsonify({"error": "Service Ticket not found"}), 404
-    
-    db.session.delete(service_ticket)
-    db.session.commit()
-    return jsonify({"message": "Service Ticket deleted"}), 200
-
-
-

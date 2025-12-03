@@ -12,6 +12,9 @@ class MechanicSchema(ma.SQLAlchemySchema):
     address = fields.Str(required=True)
     schedule = fields.Str(required=True)
     salary = fields.Float(allow_none=True)
+    password = fields.Str(allow_none=True)
+
 
 mechanic_schema = MechanicSchema()
 mechanics_schema = MechanicSchema(many=True)
+login_schema = MechanicSchema(exclude=['first_name', 'last_name', 'address', 'schedule', 'salary'])

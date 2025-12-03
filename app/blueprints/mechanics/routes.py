@@ -1,12 +1,31 @@
 from . import mechanics_bp
-from .schemas import mechanic_schema, mechanics_schema
+from .schemas import mechanic_schema, mechanics_schema, login_schema
 from flask import request, jsonify
 from marshmallow import ValidationError
 from app.models import Mechanic, db
 from app.extensions import limiter, cache
 from sqlalchemy import select
+from werkzeug.security import generate_password_hash, check_password_hash
+from app.util.auth import encode_token, token_required
 
 # ---------- CRUD operations for Mechanics ----------
+@mechanics_bp.route('/login', methods=['POST'])
+def login():
+    try:
+        data = login_schema.load(request.json)
+    except ValidationError as e:
+        return jsonify(e.messages), 400
+    
+    mechanic = db.session.query(Mechanic).where(Mechanic.email==data['email']).first()
+
+    if mechanic and check_password_hash(mechanic.password, data['password']):
+        token = encode_token(mechanic.id)
+        return jsonify({
+            "message": f"Welcome {mechanic.first_name}",
+            "token": token
+        }), 200
+    else:
+        return jsonify({"message": "Wrong email or password"}), 401
 
 
 # create a new mechanic
@@ -16,6 +35,8 @@ def create_mechanic():
         data = mechanic_schema.load(request.json) # The JSON data is inserted in postman as an example of front end user input. 
     except ValidationError as err:
         return jsonify(err.messages), 400
+    
+    data['password'] = generate_password_hash(data['password'])
 
     new_mechanic = Mechanic(**data)
     db.session.add(new_mechanic)
@@ -34,6 +55,7 @@ def get_mechanics():
 
 # update mechanics
 @mechanics_bp.route('/<int:mechanic_id>', methods=['PUT'])
+@token_required
 def update_mechanic(mechanic_id):
     mechanic = db.session.get(Mechanic, mechanic_id) # Get mechanic from db using int:mechanic_id specified in request.
     if not mechanic:
@@ -53,6 +75,7 @@ def update_mechanic(mechanic_id):
 
 # delete a mechanic
 @mechanics_bp.route('/<int:mechanic_id>', methods=['DELETE'])
+@token_required
 def delete_mechanic(mechanic_id):
     mechanic = db.session.get(Mechanic, mechanic_id)
     if not mechanic:

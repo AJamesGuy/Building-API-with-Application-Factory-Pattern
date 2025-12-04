@@ -1,8 +1,8 @@
+
 from datetime import datetime, timedelta, timezone
 from functools import wraps
-import jwt
+from jose import jwt
 from flask import request, jsonify
-import os
 
 SECRET_KEY = "fresh-secret-key-for-testing"
 
@@ -31,8 +31,8 @@ def token_required(f):
             request.logged_in_user_id = data['sub']
         except jwt.ExpiredSignatureError:
             return jsonify({'message': 'Token has expired!'}), 401
-        except jwt.InvalidTokenError:
-            return jsonify({"message": 'Token is invalid!'}), 401
+        except jwt.JWTError:
+            return jsonify({'message': 'Token is invalid!'}), 401
         return f(*args, **kwargs)
     return decorated
 

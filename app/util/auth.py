@@ -2,6 +2,7 @@
 from datetime import datetime, timedelta, timezone
 from functools import wraps
 from jose import jwt
+import jose
 from flask import request, jsonify
 
 SECRET_KEY = "fresh-secret-key-for-testing"
@@ -29,9 +30,9 @@ def token_required(f):
         try:
             data = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
             request.logged_in_user_id = data['sub']
-        except jwt.ExpiredSignatureError:
+        except jose.exceptions.ExpiredSignatureError:
             return jsonify({'message': 'Token has expired!'}), 401
-        except jwt.JWTError:
+        except jose.exceptions.JWTError:
             return jsonify({'message': 'Token is invalid!'}), 401
         return f(*args, **kwargs)
     return decorated

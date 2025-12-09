@@ -22,7 +22,7 @@ def create_customer():
     return customer_schema.jsonify(new_customer), 201
 
 # read all customers
-@customers_bp.route('/', methods=['GET'])
+@customers_bp.route('/read-customers', methods=['GET'])
 @limiter.limit("10 per minute")
 def get_customers():
     try:

@@ -29,7 +29,7 @@ def login():
 
 
 # create a new mechanic
-@mechanics_bp.route('/', methods=['POST'])
+@mechanics_bp.route('/create-mechanic', methods=['POST'])
 def create_mechanic():
     try:
         data = mechanic_schema.load(request.json) # The JSON data is inserted in postman as an example of front end user input. 
@@ -44,8 +44,9 @@ def create_mechanic():
     return mechanic_schema.jsonify(new_mechanic), 201
 
 # read all mechanics
-@mechanics_bp.route('/', methods=['GET'])
+@mechanics_bp.route('/read-mechanics', methods=['GET'])
 @limiter.limit("10 per minute")
+@token_required
 def get_mechanics():
     try:
         mechanics = db.session.query(Mechanic).all()
@@ -54,7 +55,7 @@ def get_mechanics():
         return jsonify({"error": str(e)}), 500
 
 # update mechanics
-@mechanics_bp.route('/<int:mechanic_id>', methods=['PUT'])
+@mechanics_bp.route('/<int:mechanic_id>/update-mechanic', methods=['PUT'])
 @token_required
 def update_mechanic(mechanic_id):
     mechanic = db.session.get(Mechanic, mechanic_id) # Get mechanic from db using int:mechanic_id specified in request.
@@ -74,7 +75,7 @@ def update_mechanic(mechanic_id):
 
 
 # delete a mechanic
-@mechanics_bp.route('/<int:mechanic_id>', methods=['DELETE'])
+@mechanics_bp.route('/<int:mechanic_id>/delete-mechanic', methods=['DELETE'])
 @token_required
 def delete_mechanic(mechanic_id):
     mechanic = db.session.get(Mechanic, mechanic_id)
@@ -84,3 +85,22 @@ def delete_mechanic(mechanic_id):
     db.session.delete(mechanic)
     db.session.commit()
     return jsonify({"message": "Mechanic deleted"}), 200
+
+@mechanics_bp.route('/<int:mechanic_id>/my-tickets', methods=['GET'])
+@token_required
+def mechanic_tickets(mechanic_id):
+    mechanic = db.session.get(Mechanic, mechanic_id)
+    if not mechanic:
+        return jsonify({"error": "Mechanic not found"}), 404
+    
+
+
+    tickets = mechanic.service_tickets
+    
+    return jsonify([{
+        'id': ticket.id,
+        'vin': ticket.vin,
+        'service_desc': ticket.service_desc,
+        'price': ticket.price,
+        'customer_id': ticket.customer_id
+    } for ticket in tickets]), 200

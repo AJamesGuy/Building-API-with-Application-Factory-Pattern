@@ -12,7 +12,7 @@ class MechanicSchema(ma.SQLAlchemySchema):
     address = fields.Str(required=True)
     schedule = fields.Str(required=True)
     salary = fields.Float(allow_none=True)
-    password = fields.Str(allow_none=True)
+    password = fields.Str(required=True)
 
 
 mechanic_schema = MechanicSchema()

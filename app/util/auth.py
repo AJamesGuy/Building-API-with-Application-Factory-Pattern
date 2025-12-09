@@ -11,7 +11,7 @@ def encode_token(mechanic_id):
     payload = {
         'exp': datetime.now(tz=timezone.utc) + timedelta(days=1),
         'iat': datetime.now(tz=timezone.utc),
-        'sub': mechanic_id
+        'sub': str(mechanic_id)
     }
     token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
     return token
@@ -22,9 +22,7 @@ def token_required(f):
         token = None
 
         if 'Authorization' in request.headers:
-            parts = request.headers['Authorization'].split()
-            if len(parts) == 2 and parts[0] == "Bearer":
-                token = parts[1]
+            token = request.headers['Authorization'].split(" ")[1]
         if not token:
             return jsonify({'message': 'Token is missing!'}), 401
         try:

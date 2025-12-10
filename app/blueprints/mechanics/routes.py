@@ -78,6 +78,10 @@ def update_mechanic(mechanic_id):
 @mechanics_bp.route('/<int:mechanic_id>/delete-mechanic', methods=['DELETE'])
 @token_required
 def delete_mechanic(mechanic_id):
+    # Ensure the mechanic can only delete their own account
+    if request.logged_in_user_id != mechanic_id:
+        return jsonify({"error": "Unauthorized - you can only delete your own account"}), 403
+    
     mechanic = db.session.get(Mechanic, mechanic_id)
     if not mechanic:
         return jsonify({"error": "Mechanic not found"}), 404
@@ -94,8 +98,6 @@ def mechanic_tickets(mechanic_id):
     if not mechanic:
         return jsonify({"error": "Mechanic not found"}), 404
     
-
-
     tickets = mechanic.service_tickets
     
     return jsonify([{

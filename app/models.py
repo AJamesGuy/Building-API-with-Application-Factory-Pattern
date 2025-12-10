@@ -24,12 +24,12 @@ mechanics_service_tickets = Table(
     Column("mechanics_id", ForeignKey("mechanics.id"), primary_key=True)
     )
 
-inventory_service_tickets = Table(
-    "inventory_service_tickets",
-    Base.metadata,
-    Column()
+# inventory_service_tickets = Table(
+#     "inventory_service_tickets",
+#     Base.metadata,
+#     Column()
 
-)
+# )
 
 
 

@@ -26,7 +26,10 @@ def create_customer():
 @limiter.limit("10 per minute")
 def get_customers():
     try:
-        customers = db.session.query(Customer).all()
+        page = int(request.args.get("page"))
+        per_page = int(request.args.get("per_page"))
+        query = select(Customer)
+        customers = db.paginate(query, page=page, per_page=per_page)
         return customers_schema.jsonify(customers), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -60,3 +63,19 @@ def delete_customer(customer_id):
     db.session.commit()
     return jsonify({"message": "Customer deleted"}), 200
 
+@customers_bp.route('/search-customer', methods=['GET'])
+def search_customer():
+    data = customer_schema.load(request.json)
+
+    customer = db.session.query(Customer).where(Customer.email == data['email']).first()
+
+    if not customer:
+        return jsonify({"error": "Customer not found."})
+    
+    return jsonify({
+        "Customer ID": customer.id,
+        "First Name": customer.first_name,
+        "Last Name": customer.last_name,
+        "Email": customer.email,
+        "Phone": customer.phone
+    })

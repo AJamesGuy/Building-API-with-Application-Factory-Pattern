@@ -22,4 +22,118 @@ securityDefinitions:
 paths:
 
   /customers/login:
-  
+    post:
+      tags:
+        - customers
+      summary: "Login endpoint for customers"
+      description: "Validates customers' email and password for login. Returns an authentication token."
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Login Credentials"
+          required: true
+          schema:
+            $ref: "#/definitions/CustomerLoginCredentials"
+      responses:
+        200:
+          description: "Login Successful"
+          schema:
+            $ref: "#/definitions/CustomerLoginResponse"
+          examples:
+            application/json:
+              message: "Welcome Customer"
+              token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+    
+  /customers:
+    post:
+      tags:
+        - Customers
+      summary: "Create new customer"
+      description: "Create a new customer account (rate limited to 30 per day)"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "New customer information"
+          required: true
+          schema:
+            $ref: "#/definition/CustomerInput"
+      
+      responses:
+        201:
+          description: "Creation Successful"
+          schema: "#/definitions/CustomerResponse"
+          examples:
+            application/json:
+              id: 1
+              first_name: "Jane",
+              last_name: "Doe",
+              email: "JaneDoe@example.com",
+              password: "<encrypted password>",
+              phone: "123-4567"
+        400:
+          description: "Validation Error"
+          schema:
+            $ref:"#/definitions/ErrorResponse"
+        
+      /customers/read-customers:
+        get:
+          tags:
+            - Customers
+          summary: "Get all customers utilizing Pagination"
+          description: "endpoint to retrieve an array of customer objects"
+          parameters:
+            - in: "query"
+              name: "page"
+              type: integer
+              description: "Page number"
+              required: false
+            - in: "query"
+              name: "per_page"
+              type: integer
+              description: "Items per page"
+              required: false
+          responses:
+            200:
+              description: "Successful Retrieval of Customers"
+              schema:
+                $ref: "#/definitions/CustomerResponse"
+            500:
+              description: "Error retrieving customer objects"
+              schema:
+                $ref: "#/definitions/ErrorResponse"
+      /customers/{customer_id}/update-customer:
+        put:
+          tags:
+            - Customers
+          summary: "Update Customer Account"
+          description: "Update the account of the logged in Customer"
+          security:
+            - bearerAuth: []
+          parameters:
+            - in: "body"
+              name: "body"
+              description: "Customer Updates"
+              required: true
+              schema:
+                $ref: "#/definitions/CustomerInput"
+          responses:
+            403:
+              description: "Unauthorized attempt to update account of another Customer"
+              schema:
+                $ref: "#/definitions/ErrorResponse"
+            200:
+              description: "Customer updated Successfully"
+              schema:
+                $ref: "#/definitions/CustomerResponse"
+            404:
+              description: "Customer not found"
+              schema:
+                $ref: "/#/definitions/ErrorResponse"
+    
+
+            
+
+
+          
+
+        

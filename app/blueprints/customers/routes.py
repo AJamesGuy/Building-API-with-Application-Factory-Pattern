@@ -1,5 +1,5 @@
 from . import customers_bp
-from . schemas import customer_schema, customers_schema
+from .schemas import customer_schema, customers_schema, login_schema
 from flask import request, jsonify
 from marshmallow import ValidationError
 from app.models import Customer, db
@@ -28,7 +28,7 @@ def create_customer():
 @customers_bp.route('/login', methods=['POST'])
 def login():
     try:
-        data = customer_schema.load(request.json)
+        data = login_schema.load(request.json)
     except ValidationError as e:
         return jsonify(e.messages), 400
     customer = db.session.query(Customer).where(Customer.email == data['email']).first()
@@ -45,8 +45,8 @@ def login():
 @token_required
 def get_customers():
     try:
-        page = int(request.args.get("page"))
-        per_page = int(request.args.get("per_page"))
+        page = int(request.args.get("page", 1))
+        per_page = int(request.args.get("per_page", 10))
         query = select(Customer)
         customers = db.paginate(query, page=page, per_page=per_page)
         return customers_schema.jsonify(customers), 200

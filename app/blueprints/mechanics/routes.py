@@ -102,9 +102,8 @@ def mechanic_tickets(mechanic_id):
     
     return jsonify([{
         'id': ticket.id,
-        'vin': ticket.vin,
         'service_desc': ticket.service_desc,
-        'price': ticket.price,
+        'total_cost': ticket.total_cost,
         'customer_id': ticket.customer_id
     } for ticket in tickets]), 200
 

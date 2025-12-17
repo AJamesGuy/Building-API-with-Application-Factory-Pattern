@@ -15,3 +15,5 @@ class CustomerSchema(ma.SQLAlchemySchema):
 
 customer_schema = CustomerSchema()
 customers_schema = CustomerSchema(many=True)
+# simple schema for login (only email and password)
+login_schema = CustomerSchema(only=("email", "password"))

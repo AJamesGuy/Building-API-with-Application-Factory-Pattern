@@ -2,7 +2,7 @@ from . import service_tickets_bp
 from .schemas import service_ticket_schema, service_tickets_schema
 from flask import request, jsonify
 from marshmallow import ValidationError
-from app.models import Service_Ticket, db, Mechanic, Customer
+from app.models import Service_Ticket, db, Mechanic, Customer, Part
 from app.extensions import limiter, cache
 from sqlalchemy import select
 
@@ -68,4 +68,21 @@ def remove_mechanic(ticket_id, mechanic_id):
     db.session.commit()
 
     return service_ticket_schema.jsonify(ticket), 200 # Serialize updated service-ticket-python-object -> JSON and return to front end
-    
+
+@service_tickets_bp.route('/<int:ticket_id>/add-part/<int:part_id>', methods=['POST'])
+def add_part(ticket_id, part_id):
+    ticket = db.session.get(Service_Ticket, ticket_id)
+    if not ticket:
+        return jsonify({"error": "Service ticket not found"}), 404
+
+    part = db.session.get(Part, part_id)
+    if not part:
+        return jsonify({"error": "Part not found"}), 404
+
+    if part in ticket.parts:
+        return jsonify({"message": "Part already added to this ticket"}), 200
+
+    ticket.parts.append(part)
+    db.session.commit()
+
+    return service_ticket_schema.jsonify(ticket), 200

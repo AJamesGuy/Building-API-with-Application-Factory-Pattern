@@ -7,9 +7,8 @@ class ServiceTicketSchema(ma.SQLAlchemySchema):
         model = Service_Ticket
     id = fields.Integer(dump_only=True)
     customer_id = fields.Integer(required=True)
-    vin = fields.Str(required=True)
     service_desc = fields.Str(required=True)
-    price = fields.Float(required=True)
+    total_cost = fields.Float(required=True)
 
 service_ticket_schema = ServiceTicketSchema()
 service_tickets_schema = ServiceTicketSchema(many=True)

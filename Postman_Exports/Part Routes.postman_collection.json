@@ -1,0 +1,140 @@
+{
+	"info": {
+		"_postman_id": "721aba15-e139-4cd3-bd73-bb46a26f0406",
+		"name": "Part Routes",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "48433776"
+	},
+	"item": [
+		{
+			"name": "Create Part",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"desc_id\": \"1\",\r\n    \"name\": \"Alternator\",\r\n    \"serial_num\": \"1348675245908\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5000/parts",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"parts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Description",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"description\": \"Alternator for 2000-2005 Acuras\",\r\n    \"name\": \"Alternator\",\r\n    \"price\": 140.00\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5000/parts/create-description",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"parts",
+						"create-description"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Parts",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/parts/get-parts",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"parts",
+						"get-parts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Part",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"desc_id\": \"1\",\r\n    \"name\": \"Refurbished Alternator\",\r\n    \"serial_num\": \"1348675245908\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5000/parts/1/update-part",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"parts",
+						"1",
+						"update-part"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Part",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		}
+	]
+}

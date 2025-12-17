@@ -1,19 +1,19 @@
 {
 	"info": {
-		"_postman_id": "458ca35c-e388-475d-a18c-cc1cf3cc6739",
-		"name": "Mechanics Routes",
+		"_postman_id": "af4f677e-e55c-4a75-a22c-9b734e78f716",
+		"name": "Service_Ticket Routes",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "48433776"
 	},
 	"item": [
 		{
-			"name": "Create Mechanic",
+			"name": "Create Service Ticket",
 			"request": {
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"first_name\": \"Test\",\r\n    \"last_name\": \"Last_name\",\r\n    \"email\": \"veryuniqeemail@email.com\",\r\n    \"address\": \"132 hope st.\",\r\n    \"schedule\": \"M-F 9-5\",\r\n    \"salary\": 56000.00\r\n}",
+					"raw": "{\r\n    \"customer_id\": 1,\r\n    \"service_desc\": \"Oil Change\",\r\n    \"total_cost\": 300.00\r\n\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -21,7 +21,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:5000/mechanics",
+					"raw": "http://127.0.0.1:5000/service-tickets",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -31,19 +31,19 @@
 					],
 					"port": "5000",
 					"path": [
-						"mechanics"
+						"service-tickets"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Get Mechanics",
+			"name": "Get Service Tickets",
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://127.0.0.1:5000/mechanics",
+					"raw": "http://127.0.0.1:5000/service-tickets/get-tickets",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -53,20 +53,21 @@
 					],
 					"port": "5000",
 					"path": [
-						"mechanics"
+						"service-tickets",
+						"get-tickets"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Update Mechanic",
+			"name": "Assign Mechanic to Service Ticket",
 			"request": {
 				"method": "PUT",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"first_name\": \"Haryy\",\r\n    \"last_name\": \"James\",\r\n    \"email\": \"HarryMacMillerJr@gmail.com\",\r\n    \"address\": \"456 Donald Trump parkway\",\r\n    \"schedule\": \"Mon-Tue 8am-8pm, Fri-Sun 8am-8pm\",\r\n    \"salary\": 65300.00\r\n}",
+					"raw": "",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -74,7 +75,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:5000/mechanics/2",
+					"raw": "http://127.0.0.1:5000/service-tickets/1/assign-mechanic/1",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -84,20 +85,22 @@
 					],
 					"port": "5000",
 					"path": [
-						"mechanics",
-						"2"
+						"service-tickets",
+						"1",
+						"assign-mechanic",
+						"1"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Delete Mechanic",
+			"name": "Remove Mechanic from Ticket",
 			"request": {
-				"method": "DELETE",
+				"method": "PUT",
 				"header": [],
 				"url": {
-					"raw": "http://127.0.0.1:5000/mechanics/1",
+					"raw": "http://127.0.0.1:5000/service-tickets/1/remove-mechanic/3",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -107,7 +110,34 @@
 					],
 					"port": "5000",
 					"path": [
-						"mechanics",
+						"service-tickets",
+						"1",
+						"remove-mechanic",
+						"3"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Part to Ticket",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/service-tickets/1/add-part/1",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"service-tickets",
+						"1",
+						"add-part",
 						"1"
 					]
 				}

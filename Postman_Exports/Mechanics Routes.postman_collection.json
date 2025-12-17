@@ -69,7 +69,7 @@
 					},
 					"status": "CREATED",
 					"code": 201,
-					"_postman_previewlanguage": "",
+					"_postman_previewlanguage": null,
 					"header": [
 						{
 							"key": "Server",
@@ -152,7 +152,7 @@
 					},
 					"status": "OK",
 					"code": 200,
-					"_postman_previewlanguage": "",
+					"_postman_previewlanguage": null,
 					"header": [
 						{
 							"key": "Server",
@@ -255,7 +255,7 @@
 					},
 					"status": "OK",
 					"code": 200,
-					"_postman_previewlanguage": "",
+					"_postman_previewlanguage": null,
 					"header": [
 						{
 							"key": "Server",
@@ -289,7 +289,7 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "http://127.0.0.1:5000/mechanics/1",
+					"raw": "http://127.0.0.1:5000/mechanics/1/delete-mechanic",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -300,7 +300,8 @@
 					"port": "5000",
 					"path": [
 						"mechanics",
-						"1"
+						"1",
+						"delete-mechanic"
 					]
 				}
 			},
@@ -369,7 +370,7 @@
 					},
 					"status": "OK",
 					"code": 200,
-					"_postman_previewlanguage": "",
+					"_postman_previewlanguage": null,
 					"header": [
 						{
 							"key": "Server",
@@ -454,7 +455,7 @@
 					},
 					"status": "OK",
 					"code": 200,
-					"_postman_previewlanguage": "",
+					"_postman_previewlanguage": null,
 					"header": [
 						{
 							"key": "Server",

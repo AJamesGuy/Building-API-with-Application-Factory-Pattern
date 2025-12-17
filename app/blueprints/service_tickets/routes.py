@@ -21,7 +21,7 @@ def create_service_ticket():
     return service_ticket_schema.jsonify(new_service_ticket), 201 # Serialize data for front end usability.
 
 # read all service_tickets
-@service_tickets_bp.route('/', methods=['GET'])
+@service_tickets_bp.route('/get-tickets', methods=['GET'])
 @limiter.limit("10 per minute")
 def get_service_tickets():
     try:

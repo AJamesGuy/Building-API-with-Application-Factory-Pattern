@@ -11,6 +11,7 @@ class CustomerSchema(ma.SQLAlchemySchema):
     email = fields.Email(required=True)
     password = fields.Str(required=True)
     phone = fields.Str(required=True)
+    address = fields.Str(required=False)
 
 
 customer_schema = CustomerSchema()

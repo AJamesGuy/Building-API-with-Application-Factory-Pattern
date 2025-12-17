@@ -21,29 +21,23 @@ def create_part():
     db.session.commit() # Commit new Part object to data base. Added as new_part.
     return part_schema.jsonify(new_part), 201 # Serialize data for front end usability.
 
-# Create and Add description to part
-@parts_bp.route('/<int:part_id>/add-description', methods=['PUT'])
-def add_description_to_part(part_id):
-    part = db.session.get(Part, part_id)
-    if not part:
-        return jsonify({"error": "Part not found"}), 404
-
+# Create description
+@parts_bp.route('/create-description', methods=['POST'])
+def create_part_description():
     try:
-        data = part_description_schema.load(request.json)
+        data = part_description_schema.load(request.json) # data is now the JSON input from the front end
     except ValidationError as err:
         return jsonify(err.messages), 400
-
+    
     new_description = InventoryDescription(**data)
-    part.desc = new_description
     db.session.add(new_description)
-    db.session.commit()
-
-    return part_schema.jsonify(part), 200
+    db.session.commit() # Commit new InventoryDescription object to data base. Added as new_description.
+    return part_description_schema.jsonify(new_description), 201 # Serialize data for front end usability.
 
 
 
 # read all parts
-@parts_bp.route('/', methods=['GET'])
+@parts_bp.route('/get-parts', methods=['GET'])
 @limiter.limit("10 per minute")
 def get_parts():
     try:

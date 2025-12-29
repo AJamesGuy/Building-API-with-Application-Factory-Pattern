@@ -1,0 +1,259 @@
+swagger: '2.0'
+info:
+  title: 'Part Management API'
+  description: 'API for managing inventory parts and descriptions'
+  version: '1.0.0'
+
+host: http://127.0.0.1:5000
+schemes:
+  - 'http'
+consumes:
+  - 'application/json'
+produces:
+  - 'application/json'
+
+securityDefinitions:
+  bearerAuth:
+    type: apiKey
+    name: Authorization
+    in: header
+    description: 'JWT token for authentication'
+
+paths:
+
+  /parts/:
+    post:
+      tags:
+        - Parts
+      summary: "Create new part"
+      description: "Create a new part in the inventory system"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Part information"
+          required: true
+          schema:
+            $ref: "#/definitions/PartInput"
+      responses:
+        201:
+          description: "Part created successfully"
+          schema:
+            $ref: "#/definitions/PartResponse"
+          examples:
+            application/json:
+              id: 1
+              desc_id: 1
+              name: "Air Filter"
+              serial_num: "AF-12345"
+        400:
+          description: "Validation error"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /parts/:
+    get:
+      tags:
+        - Parts
+      summary: "Get all parts"
+      description: "Retrieve a list of all parts in inventory"
+      responses:
+        200:
+          description: "Successfully retrieved parts"
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/PartResponse"
+          examples:
+            application/json:
+              - id: 1
+                desc_id: 1
+                name: "Air Filter"
+                serial_num: "AF-12345"
+              - id: 2
+                desc_id: 2
+                name: "Oil Filter"
+                serial_num: "OF-67890"
+        500:
+          description: "Server error"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /parts/{part_id}/update-part:
+    put:
+      tags:
+        - Parts
+      summary: "Update part"
+      description: "Update an existing part in inventory"
+      parameters:
+        - in: "path"
+          name: "part_id"
+          type: integer
+          required: true
+          description: "Part ID to update"
+        - in: "body"
+          name: "body"
+          description: "Part updates"
+          required: true
+          schema:
+            $ref: "#/definitions/PartInput"
+      responses:
+        200:
+          description: "Part updated successfully"
+          schema:
+            $ref: "#/definitions/PartResponse"
+          examples:
+            application/json:
+              id: 1
+              desc_id: 1
+              name: "Air Filter"
+              serial_num: "AF-12345"
+        404:
+          description: "Part not found"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /parts/{part_id}/delete-part:
+    delete:
+      tags:
+        - Parts
+      summary: "Delete part"
+      description: "Delete a part from inventory"
+      parameters:
+        - in: "path"
+          name: "part_id"
+          type: integer
+          required: true
+          description: "Part ID to delete"
+      responses:
+        200:
+          description: "Part deleted successfully"
+          schema:
+            $ref: "#/definitions/MessageResponse"
+          examples:
+            application/json:
+              message: "Part deleted successfully"
+        404:
+          description: "Part not found"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /part-descriptions/{part_id}/add-description:
+    put:
+      tags:
+        - Part Descriptions
+      summary: "Add description to part"
+      description: "Create and associate an inventory description to a part"
+      parameters:
+        - in: "path"
+          name: "part_id"
+          type: integer
+          required: true
+          description: "Part ID"
+        - in: "body"
+          name: "body"
+          description: "Inventory description information"
+          required: true
+          schema:
+            $ref: "#/definitions/InventoryDescriptionInput"
+      responses:
+        200:
+          description: "Description added successfully"
+          schema:
+            $ref: "#/definitions/PartResponse"
+          examples:
+            application/json:
+              id: 1
+              desc_id: 1
+              name: "Air Filter"
+              serial_num: "AF-12345"
+        404:
+          description: "Part not found"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        400:
+          description: "Validation error"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+definitions:
+
+  PartInput:
+    type: object
+    required:
+      - desc_id
+      - name
+    properties:
+      desc_id:
+        type: integer
+        example: 1
+      name:
+        type: string
+        example: "Air Filter"
+      serial_num:
+        type: string
+        example: "AF-12345"
+
+  PartResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 1
+      desc_id:
+        type: integer
+        example: 1
+      name:
+        type: string
+        example: "Air Filter"
+      serial_num:
+        type: string
+        example: "AF-12345"
+
+  InventoryDescriptionInput:
+    type: object
+    required:
+      - description
+      - name
+      - price
+    properties:
+      description:
+        type: string
+        example: "Standard air filter for most sedans"
+      name:
+        type: string
+        example: "Air Filter"
+      price:
+        type: number
+        format: float
+        example: 25.00
+
+  InventoryDescriptionResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 1
+      description:
+        type: string
+        example: "Standard air filter for most sedans"
+      name:
+        type: string
+        example: "Air Filter"
+      price:
+        type: number
+        format: float
+        example: 25.00
+
+  ErrorResponse:
+    type: object
+    properties:
+      error:
+        type: string
+        example: "Not found"
+
+  MessageResponse:
+    type: object
+    properties:
+      message:
+        type: string
+        example: "Success"

@@ -1,0 +1,387 @@
+swagger: '2.0'
+info:
+  title: 'Mechanic Management API'
+  description: 'API for managing mechanic accounts and service tickets'
+  version: '1.0.0'
+
+host: http://127.0.0.1:5000
+schemes:
+  - 'http'
+consumes:
+  - 'application/json'
+produces:
+  - 'application/json'
+
+securityDefinitions:
+  bearerAuth:
+    type: apiKey
+    name: Authorization
+    in: header
+    description: 'JWT token for authentication'
+
+paths:
+
+  /mechanics/login:
+    post:
+      tags:
+        - Mechanics
+      summary: "Login endpoint for mechanics"
+      description: "Validates mechanic's email and password for login. Returns an authentication token."
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Login Credentials"
+          required: true
+          schema:
+            $ref: "#/definitions/MechanicLoginCredentials"
+      responses:
+        200:
+          description: "Login Successful"
+          schema:
+            $ref: "#/definitions/MechanicLoginResponse"
+          examples:
+            application/json:
+              message: "Welcome Jane!"
+              token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        401:
+          description: "Wrong email or password"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /mechanics/create-mechanic:
+    post:
+      tags:
+        - Mechanics
+      summary: "Create new mechanic"
+      description: "Create a new mechanic account in the system"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "New mechanic information"
+          required: true
+          schema:
+            $ref: "#/definitions/MechanicInput"
+      responses:
+        201:
+          description: "Mechanic created successfully"
+          schema:
+            $ref: "#/definitions/MechanicResponse"
+          examples:
+            application/json:
+              id: 1
+              first_name: "Jane"
+              last_name: "Smith"
+              email: "jane.smith@example.com"
+              address: "456 Oak Ave, City, State"
+              schedule: "Monday-Friday 9AM-5PM"
+              salary: 55000.00
+        400:
+          description: "Validation error"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /mechanics/read-mechanics:
+    get:
+      tags:
+        - Mechanics
+      summary: "Get all mechanics"
+      description: "Retrieve a list of all mechanics in the system"
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: "Successfully retrieved mechanics"
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/MechanicResponse"
+          examples:
+            application/json:
+              - id: 1
+                first_name: "Jane"
+                last_name: "Smith"
+                email: "jane.smith@example.com"
+                address: "456 Oak Ave, City, State"
+                schedule: "Monday-Friday 9AM-5PM"
+                salary: 55000.00
+              - id: 2
+                first_name: "Bob"
+                last_name: "Johnson"
+                email: "bob.johnson@example.com"
+                address: "789 Pine St, City, State"
+                schedule: "Tuesday-Saturday 10AM-6PM"
+                salary: 60000.00
+        401:
+          description: "Token missing or invalid"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        500:
+          description: "Server error"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /mechanics/{mechanic_id}/update-mechanic:
+    put:
+      tags:
+        - Mechanics
+      summary: "Update mechanic information"
+      description: "Update an existing mechanic's details"
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: "path"
+          name: "mechanic_id"
+          type: integer
+          required: true
+          description: "Mechanic ID to update"
+        - in: "body"
+          name: "body"
+          description: "Mechanic updates"
+          required: true
+          schema:
+            $ref: "#/definitions/MechanicInput"
+      responses:
+        200:
+          description: "Mechanic updated successfully"
+          schema:
+            $ref: "#/definitions/MechanicResponse"
+        404:
+          description: "Mechanic not found"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /mechanics/{mechanic_id}/delete-mechanic:
+    delete:
+      tags:
+        - Mechanics
+      summary: "Delete mechanic account"
+      description: "Delete a mechanic account (only your own account)"
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: "path"
+          name: "mechanic_id"
+          type: integer
+          required: true
+          description: "Mechanic ID to delete"
+      responses:
+        200:
+          description: "Mechanic deleted successfully"
+          schema:
+            $ref: "#/definitions/MessageResponse"
+          examples:
+            application/json:
+              message: "Mechanic deleted successfully"
+        403:
+          description: "Unauthorized - can only delete own account"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        404:
+          description: "Mechanic not found"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /mechanics/{mechanic_id}/my-tickets:
+    get:
+      tags:
+        - Mechanics
+      summary: "Get mechanic's service tickets"
+      description: "Retrieve all service tickets assigned to a specific mechanic (cached for 50 seconds)"
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: "path"
+          name: "mechanic_id"
+          type: integer
+          required: true
+          description: "Mechanic ID"
+      responses:
+        200:
+          description: "Successfully retrieved tickets"
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/MechanicTicketResponse"
+          examples:
+            application/json:
+              - id: 1
+                service_desc: "Oil change and filter replacement"
+                total_cost: 75.00
+                customer_id: 2
+              - id: 3
+                service_desc: "Brake pad replacement"
+                total_cost: 150.00
+                customer_id: 5
+        404:
+          description: "Mechanic not found"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /mechanics/rankings/by-tickets:
+    get:
+      tags:
+        - Mechanics
+      summary: "Get mechanics ranked by tickets"
+      description: "Retrieve all mechanics sorted by number of service tickets (most to least)"
+      parameters: []
+      responses:
+        200:
+          description: "Successfully retrieved rankings"
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/MechanicRankingResponse"
+          examples:
+            application/json:
+              - id: 1
+                first_name: "Jane"
+                last_name: "Smith"
+                email: "jane.smith@example.com"
+                tickets_count: 15
+              - id: 2
+                first_name: "Bob"
+                last_name: "Johnson"
+                email: "bob.johnson@example.com"
+                tickets_count: 12
+        500:
+          description: "Server error"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+definitions:
+
+  MechanicLoginCredentials:
+    type: object
+    required:
+      - email
+      - password
+    properties:
+      email:
+        type: string
+        format: email
+        example: "jane.smith@example.com"
+      password:
+        type: string
+        format: password
+        example: "password123"
+
+  MechanicLoginResponse:
+    type: object
+    properties:
+      message:
+        type: string
+        example: "Welcome Jane!"
+      token:
+        type: string
+        example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+
+  MechanicInput:
+    type: object
+    required:
+      - first_name
+      - last_name
+      - email
+      - password
+      - address
+      - schedule
+    properties:
+      first_name:
+        type: string
+        example: "Jane"
+      last_name:
+        type: string
+        example: "Smith"
+      email:
+        type: string
+        format: email
+        example: "jane.smith@example.com"
+      password:
+        type: string
+        format: password
+        example: "password123"
+      address:
+        type: string
+        example: "456 Oak Ave, City, State"
+      schedule:
+        type: string
+        example: "Monday-Friday 9AM-5PM"
+      salary:
+        type: number
+        format: float
+        example: 55000.00
+
+  MechanicResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 1
+      first_name:
+        type: string
+        example: "Jane"
+      last_name:
+        type: string
+        example: "Smith"
+      email:
+        type: string
+        example: "jane.smith@example.com"
+      address:
+        type: string
+        example: "456 Oak Ave, City, State"
+      schedule:
+        type: string
+        example: "Monday-Friday 9AM-5PM"
+      salary:
+        type: number
+        format: float
+        example: 55000.00
+
+  MechanicTicketResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 1
+      service_desc:
+        type: string
+        example: "Oil change and filter replacement"
+      total_cost:
+        type: number
+        format: float
+        example: 75.00
+      customer_id:
+        type: integer
+        example: 2
+
+  MechanicRankingResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 1
+      first_name:
+        type: string
+        example: "Jane"
+      last_name:
+        type: string
+        example: "Smith"
+      email:
+        type: string
+        example: "jane.smith@example.com"
+      tickets_count:
+        type: integer
+        example: 15
+
+  ErrorResponse:
+    type: object
+    properties:
+      error:
+        type: string
+        example: "Not found"
+
+  MessageResponse:
+    type: object
+    properties:
+      message:
+        type: string
+        example: "Success"

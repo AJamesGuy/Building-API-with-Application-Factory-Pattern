@@ -1,0 +1,229 @@
+swagger: '2.0'
+info:
+  title: 'Service Ticket Management API'
+  description: 'API for managing service tickets and assigning mechanics and parts'
+  version: '1.0.0'
+
+host: http://127.0.0.1:5000
+schemes:
+  - 'http'
+consumes:
+  - 'application/json'
+produces:
+  - 'application/json'
+
+securityDefinitions:
+  bearerAuth:
+    type: apiKey
+    name: Authorization
+    in: header
+    description: 'JWT token for authentication'
+
+paths:
+
+  /service-tickets/:
+    post:
+      tags:
+        - Service Tickets
+      summary: "Create new service ticket"
+      description: "Create a new service ticket for a customer"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Service ticket information"
+          required: true
+          schema:
+            $ref: "#/definitions/ServiceTicketInput"
+      responses:
+        201:
+          description: "Service ticket created successfully"
+          schema:
+            $ref: "#/definitions/ServiceTicketResponse"
+          examples:
+            application/json:
+              id: 1
+              customer_id: 1
+              service_desc: "Oil change and filter replacement"
+              total_cost: 75.00
+        400:
+          description: "Validation error"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /service-tickets/:
+    get:
+      tags:
+        - Service Tickets
+      summary: "Get all service tickets"
+      description: "Retrieve list of all service tickets in the system"
+      responses:
+        200:
+          description: "Successfully retrieved service tickets"
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/ServiceTicketResponse"
+          examples:
+            application/json:
+              - id: 1
+                customer_id: 1
+                service_desc: "Oil change and filter replacement"
+                total_cost: 75.00
+              - id: 2
+                customer_id: 2
+                service_desc: "Transmission fluid flush"
+                total_cost: 200.00
+        500:
+          description: "Server error"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /service-tickets/{ticket_id}/assign-mechanic/{mechanic_id}:
+    put:
+      tags:
+        - Service Tickets
+      summary: "Assign mechanic to ticket"
+      description: "Assign a mechanic to a service ticket"
+      parameters:
+        - in: "path"
+          name: "ticket_id"
+          type: integer
+          required: true
+          description: "Service Ticket ID"
+        - in: "path"
+          name: "mechanic_id"
+          type: integer
+          required: true
+          description: "Mechanic ID to assign"
+      responses:
+        200:
+          description: "Mechanic assigned successfully"
+          schema:
+            $ref: "#/definitions/ServiceTicketResponse"
+          examples:
+            application/json:
+              id: 1
+              customer_id: 1
+              service_desc: "Oil change and filter replacement"
+              total_cost: 75.00
+        404:
+          description: "Ticket or mechanic not found"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /service-tickets/{ticket_id}/remove-mechanic/{mechanic_id}:
+    put:
+      tags:
+        - Service Tickets
+      summary: "Remove mechanic from ticket"
+      description: "Remove a mechanic from a service ticket"
+      parameters:
+        - in: "path"
+          name: "ticket_id"
+          type: integer
+          required: true
+          description: "Service Ticket ID"
+        - in: "path"
+          name: "mechanic_id"
+          type: integer
+          required: true
+          description: "Mechanic ID to remove"
+      responses:
+        200:
+          description: "Mechanic removed successfully"
+          schema:
+            $ref: "#/definitions/ServiceTicketResponse"
+          examples:
+            application/json:
+              id: 1
+              customer_id: 1
+              service_desc: "Oil change and filter replacement"
+              total_cost: 75.00
+        404:
+          description: "Ticket or mechanic not found"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /service-tickets/{ticket_id}/add-part/{part_id}:
+    post:
+      tags:
+        - Service Tickets
+      summary: "Add part to ticket"
+      description: "Add a part to a service ticket"
+      parameters:
+        - in: "path"
+          name: "ticket_id"
+          type: integer
+          required: true
+          description: "Service Ticket ID"
+        - in: "path"
+          name: "part_id"
+          type: integer
+          required: true
+          description: "Part ID to add"
+      responses:
+        200:
+          description: "Part added successfully"
+          schema:
+            $ref: "#/definitions/ServiceTicketResponse"
+          examples:
+            application/json:
+              id: 1
+              customer_id: 1
+              service_desc: "Oil change and filter replacement"
+              total_cost: 75.00
+        404:
+          description: "Ticket or part not found"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+definitions:
+
+  ServiceTicketInput:
+    type: object
+    required:
+      - customer_id
+      - service_desc
+      - total_cost
+    properties:
+      customer_id:
+        type: integer
+        example: 1
+      service_desc:
+        type: string
+        example: "Oil change and filter replacement"
+      total_cost:
+        type: number
+        format: float
+        example: 75.00
+
+  ServiceTicketResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 1
+      customer_id:
+        type: integer
+        example: 1
+      service_desc:
+        type: string
+        example: "Oil change and filter replacement"
+      total_cost:
+        type: number
+        format: float
+        example: 75.00
+
+  ErrorResponse:
+    type: object
+    properties:
+      error:
+        type: string
+        example: "Not found"
+
+  MessageResponse:
+    type: object
+    properties:
+      message:
+        type: string
+        example: "Success"

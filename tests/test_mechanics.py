@@ -1,9 +1,10 @@
 # run tests: python3 -m unittest discover tests
 from app import create_app
-from app.models import Mechanic, db
+from app.models import Mechanic, Service_Ticket, db
 import unittest
 from werkzeug.security import check_password_hash, generate_password_hash
 from app.util.auth import encode_token
+from app.blueprints.service_tickets.routes import assign_mechanic
 
 class TestMechanic(unittest.TestCase):
 
@@ -11,10 +12,13 @@ class TestMechanic(unittest.TestCase):
     def setUp(self):
         self.app = create_app('TestingConfig')
         self.mechanic = Mechanic(first_name="Test", last_name="LastTest", email="test@email.com", address="test 123 st", schedule="M-F 9-5", password=generate_password_hash('12345'))
+        self.ticket = Service_Ticket(customer_id=1, service_desc="Oil Change", total_cost=300.00)
         with self.app.app_context():
             db.drop_all()
             db.create_all()
             db.session.add(self.mechanic)
+            db.session.add(self.ticket)
+            assign_mechanic(1, 1)
             db.session.commit()
         self.token = encode_token(1)
         self.client = self.app.test_client()
@@ -142,6 +146,33 @@ class TestMechanic(unittest.TestCase):
         response = self.client.get('/mechanics/1/my-tickets', headers=headers)
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response.json, list)
+
+    def test_mechanic_tickets(self):
+        headers = {'Authorization': 'Bearer ' + self.token}
+        response = self.client.get('/mechanics/1/my-tickets', headers=headers)
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(response.json, list)
+    # Negative Checks
+    def test_invalid_mechanic_tickets(self):
+        headers = {'Authorization': 'Bearer ' + self.token}
+        response = self.client.get('/mechanics/3/my-tickets', headers=headers)
+        self.assertEqual(response.status_code, 404)
+
+    def test_get_mechanics_by_tickets(self):
+        response = self.client.get('/mechanics/rankings/by-tickets')
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(response.json, list)
+    
+    # Negative Checks
+    def test_invalid_get_mechanics_by_tickets(self):
+        with self.app.app_context():
+            db.session.query(Mechanic).delete()
+            db.session.commit()
+        response = self.client.get('/mechanics/rankings/by-tickets')
+        self.assertEqual(response.status_code, 404)
+        self.assertIn('No mechanics found.', response.json['message'])
+
+
         
 
     

@@ -42,7 +42,7 @@ def assign_mechanic(ticket_id, mechanic_id):
     if not mechanic:
         return jsonify({"error": "Mechanic not found."})
     if mechanic in ticket.mechanics: # iterate through mechanics list to check if mechanic is already assigned to this ticket. The relationship in the Service_Ticket model.
-        return jsonify({"message": "Mechanic already assigned to this ticket"}), 200
+        return jsonify({"message": "Mechanic already assigned to this ticket"}), 403
     
     ticket.mechanics.append(mechanic) # if mechanic (selected by id) is not assigned to the ticket (selected by id), append the mechanic in the Service_Ticket mechanics relationship list.
     db.session.commit() # commit changes

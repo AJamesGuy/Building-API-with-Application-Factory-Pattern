@@ -119,7 +119,7 @@ def get_mechanics_by_tickets():
         mechanics = db.session.query(Mechanic).all()
 
         if not mechanics:
-            return jsonify({"message": "No mechanics found."})
+            return jsonify({"message": "No mechanics found."}), 404
         
         # Sort mechanics by the count of their service tickets in descending order
         sorted_mechanics = sorted(mechanics, key=lambda mechanic: len(mechanic.service_tickets), reverse=True)

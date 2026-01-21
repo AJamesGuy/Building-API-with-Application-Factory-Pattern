@@ -16,7 +16,7 @@ class TestMechanic(unittest.TestCase):
             db.create_all()
             db.session.add(self.mechanic)
             db.session.commit()
-        self.token = encode_token(1, 'user')
+        self.token = encode_token(1)
         self.client = self.app.test_client()
 
     #test creating a mechanic (IMPORTANT: All test functions must start with 'test')
@@ -63,7 +63,7 @@ class TestMechanic(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json['email'], 'test@email.com')
         self.assertTrue(check_password_hash(response.json['password'], '12345'))
-    
+
     # Negative Checks
     def test_invalid_login(self):
         mechanic_login_payload = {

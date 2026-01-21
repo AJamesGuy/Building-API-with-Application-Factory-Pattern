@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools >= 61.0", "wheel"]  # modern pip needs these for editable installs
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "building-api-app"               # can be anything, doesn't affect imports
+version = "0.1.0"                       # dummy version
+dependencies = []                       # list your runtime deps here if you want (or keep empty)
+
+[tool.setuptools.packages.find]
+where = ["."]                           # tells setuptools to find your packages (app/, etc.)
+namespaces = false

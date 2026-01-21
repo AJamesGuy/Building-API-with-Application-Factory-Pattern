@@ -4,9 +4,9 @@ info:
   description: 'API for managing service tickets and assigning mechanics and parts'
   version: '1.0.0'
 
-host: http://127.0.0.1:5000
+host: 'my-mechanics.onrender.com'
 schemes:
-  - 'http'
+  - 'https'
 consumes:
   - 'application/json'
 produces:

@@ -53,9 +53,12 @@ jobs: #The actions to be performed
 
     - name: Install dependencies
       run: |
+        python -m venv venv
+        source venv/bin/activate
         python -m pip install --upgrade pip
-        python -m pip install -r requirements.txt
-
+        pip install -r requirements.txt
+        pip install -e .
+        
     - name: Print debugging information
       run: |
         echo "Python Version: $(python --version)"
@@ -64,7 +67,6 @@ jobs: #The actions to be performed
         echo "Contents of site-packages: $(ls -la venv/lib/python3.12/site-packages)"
       
     - name: Run Tests
-      working-directory: ./
       run: |
         source venv/bin/activate
         python -m unittest discover -s tests -p "test_*.py"

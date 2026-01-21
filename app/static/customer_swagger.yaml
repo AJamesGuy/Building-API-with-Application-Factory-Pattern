@@ -4,7 +4,7 @@ info:
   description: 'API for managing customer accounts'
   version: '1.0.0'
 
-host: 'my-mechanics.onrender.com'
+host: 'https://my-mechanics.onrender.com'
 schemes:
   - 'https'
 consumes:

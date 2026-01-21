@@ -4,8 +4,9 @@ from functools import wraps
 from jose import jwt
 import jose
 from flask import request, jsonify
+import os
 
-SECRET_KEY = "fresh-secret-key-for-testing"
+SECRET_KEY = os.environ.get('SECRET_KEY') or "fresh-secret-key-for-testing" #grabbing secret key from environment variable or using a default for testing
 
 def encode_token(mechanic_id):
     payload = {

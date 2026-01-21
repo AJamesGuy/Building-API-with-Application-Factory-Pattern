@@ -66,9 +66,12 @@ def update_mechanic(mechanic_id):
         data = mechanic_schema.load(request.json)
     except ValidationError as err:
         return jsonify(err.messages), 400
+    
+    data['password'] = generate_password_hash(data['password'])
 
     for key, value in data.items():
         setattr(mechanic, key, value) # Set each updated attribute for mechanic with route specified mechanic id from the deserialized json object saved in the data variable
+    
 
     db.session.commit()
     return mechanic_schema.jsonify(mechanic), 200 #return serialized mechanic data

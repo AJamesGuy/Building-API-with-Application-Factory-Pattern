@@ -24,16 +24,16 @@ class TestMechanic(unittest.TestCase):
         mechanic_payload = {
             "first_name": "Test",
             "last_name": "LastTest",
-            "email": "test@email.com",
+            "email": "test1@email.com",
             "address": "test 123 st",
             "schedule": "M-F 9-5",
             "password": "12345"
         }
-        response = self.client.post('/mechanic/create-mechanic', json=mechanic_payload)
+        response = self.client.post('/mechanics/create-mechanic', json=mechanic_payload)
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json['first_name'], "Test")
         self.assertEqual(response.json['last_name'], "LastTest")
-        self.assertEqual(response.json['email'], "test@email.com")
+        self.assertEqual(response.json['email'], "test1@email.com")
         self.assertEqual(response.json['address'], "test 123 st")
         self.assertEqual(response.json['schedule'], "M-F 9-5")
         self.assertIsNone(response.json['salary'])
@@ -61,9 +61,8 @@ class TestMechanic(unittest.TestCase):
 
         response = self.client.post('/mechanics/login', json=mechanic_login_payload)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json['email'], 'test@email.com')
-        self.assertTrue(check_password_hash(response.json['password'], '12345'))
-
+        self.assertEqual(response.json['message'], 'Welcome Test')
+        self.assertIsNotNone(response.json['token'])
     # Negative Checks
     def test_invalid_login(self):
         mechanic_login_payload = {
@@ -71,15 +70,15 @@ class TestMechanic(unittest.TestCase):
             'password': '123'
         }
 
-        response = self.client.post('/mechanic/login', json=mechanic_login_payload)
+        response = self.client.post('/mechanics/login', json=mechanic_login_payload)
         self.assertEqual(response.status_code, 401)
-        self.assertNotEqual(check_password_hash(response.json['password'], '12345'))
+        self.assertNotIn('token', response.json)
 
     def test_get_mechanic(self):
-        response = self.client.get('/mechanics/read-mechanics')
+        headers = {"Authorization": "Bearer " + self.token}
+        response = self.client.get('/mechanics/read-mechanics', headers=headers)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json[0]['email'], "test@email.com")
-        self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json[0]['first_name'], "Test")
         self.assertEqual(response.json[0]['last_name'], "LastTest")
         self.assertEqual(response.json[0]['email'], "test@email.com")
@@ -98,15 +97,16 @@ class TestMechanic(unittest.TestCase):
         "schedule": "Update M-F 9-5",
         "password": "Update 12345"
     }
+        headers = {"Authorization": "Bearer " + self.token}
 
-        response = self.client.put('/mechanics/1/update-mechanic', json=mechanic_payload)
+        response = self.client.put('/mechanics/1/update-mechanic', json=mechanic_payload, headers=headers)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json['first_name'], "UpdateTest")
         self.assertEqual(response.json['last_name'], "UpdateLastTest")
         self.assertEqual(response.json['email'], "Updatetest@email.com")
         self.assertEqual(response.json['address'], "Update test 123 st")
         self.assertEqual(response.json['schedule'], "Update M-F 9-5")
-        self.assertTrue(check_password_hash(response.json[0]['password'], "Update 12345"))
+        self.assertTrue(check_password_hash(response.json['password'], "Update 12345"))
 
     # Negative Checks
     def test_invalid_update(self):
@@ -119,18 +119,23 @@ class TestMechanic(unittest.TestCase):
             "password": "Update 12345"
         }
 
+        headers = {"Authorization": "Bearer " + self.token}
+
         # Mechanic not found
-        response = self.client.put('/mechanics/2/update-mechanic', json=mechanic_payload)                                                                                   
+        response = self.client.put('/mechanics/2/update-mechanic', json=mechanic_payload, headers=headers)
         self.assertEqual(response.status_code, 404)
 
         
     def test_delete_mechanic(self):
-        response = self.client.delete('/mechanics/1/delete-mechanic')
+        headers = {"Authorization": "Bearer " + self.token}
+        response = self.client.delete('/mechanics/1/delete-mechanic', headers=headers)
         self.assertEqual(response.status_code, 200)
 
         # Negative Checks
-        response = self.client.delete('/mechanics/2/delete-mechanic') #Mechanic not found
-        self.assertEqual(response.status_code, 404)
+    def test_invalid_delete(self):
+        headers = {'Authorization': 'Bearer ' + self.token}
+        response = self.client.delete('/mechanics/2/delete-mechanic', headers=headers) #You can only update your own account
+        self.assertEqual(response.status_code, 403)
 
     def test_my_tickets(self):
         headers = {'Authorization': 'Bearer ' + self.token}

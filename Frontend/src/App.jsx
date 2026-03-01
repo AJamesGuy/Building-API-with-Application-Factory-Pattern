@@ -1,120 +1,116 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { useState, useEffect } from "react";
-
-// Layout Components
-import NavBar from './components/Layout/NavBar';
-import Footer from './components/Layout/Footer';
-import SideBar from './components/Layout/SideBar';
+import { useState } from "react";
 
 // Pages
 import Login from './pages/Login';
+import CustomerSignup from './pages/CustomerSignup';
+import MechanicSignup from './pages/MechanicSignup';
 import Dashboard from './pages/Dashboard';
-import Mechanics from './pages/Mechanics';
 import Customers from './pages/Customers';
+import Mechanics from './pages/Mechanics';
 import Parts from './pages/Parts';
 import ServiceTickets from './pages/ServiceTickets';
 
+// Components
+import NavBar from './components/Layout/NavBar';
+import SideBar from './components/Layout/SideBar';
+import Footer from './components/Layout/Footer';
+
 // Services
-import { isAuthenticated, getStoredMechanicData } from './services/api';
+import { isAuthenticated } from './services/api';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
-  const authenticated = isAuthenticated();
-  return authenticated ? children : <Navigate to="/login" replace />;
+  return isAuthenticated() ? children : <Navigate to="/login" replace />;
 };
 
-function App() {
-  const [authenticated, setAuthenticated] = useState(false);
+// Main App Content Component
+const AppContent = () => {
   const [mechanicData, setMechanicData] = useState(null);
 
-  useEffect(() => {
-    // Check authentication on mount
-    if (isAuthenticated()) {
-      setAuthenticated(true);
-      const data = getStoredMechanicData();
-      setMechanicData(data);
-    }
-  }, []);
-
-  const handleLogin = (token, mechanic) => {
-    setAuthenticated(true);
-    setMechanicData(mechanic);
-  };
-
   const handleLogout = () => {
-    setAuthenticated(false);
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    localStorage.removeItem('mechanicData');
     setMechanicData(null);
   };
 
   return (
-    <BrowserRouter>
-      <div className="app-container">
-        {authenticated && <NavBar mechanic={mechanicData} onLogout={handleLogout} />}
-        
-        <div className="main-content">
-          {authenticated && <SideBar />}
-          
+    <div className="min-h-screen bg-gray-50">
+      {isAuthenticated() && <NavBar mechanic={mechanicData} onLogout={handleLogout} />}
+
+      <div className="flex">
+        {isAuthenticated() && <SideBar />}
+
+        <main className={`flex-1 ${isAuthenticated() ? 'ml-0' : ''} p-6`}>
           <Routes>
             {/* Public Routes */}
-            <Route path="/login" element={<Login onLogin={handleLogin} />} />
-            
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup/customer" element={<CustomerSignup />} />
+            <Route path="/signup/mechanic" element={<MechanicSignup />} />
+
             {/* Protected Routes */}
-            <Route 
-              path="/" 
+            <Route
+              path="/"
               element={
                 <ProtectedRoute>
                   <Dashboard mechanic={mechanicData} />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/dashboard" 
+            <Route
+              path="/dashboard"
               element={
                 <ProtectedRoute>
                   <Dashboard mechanic={mechanicData} />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/mechanics" 
-              element={
-                <ProtectedRoute>
-                  <Mechanics mechanic={mechanicData} onLogout={handleLogout} />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/customers" 
+            <Route
+              path="/customers"
               element={
                 <ProtectedRoute>
                   <Customers />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/parts" 
+            <Route
+              path="/mechanics"
+              element={
+                <ProtectedRoute>
+                  <Mechanics />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/parts"
               element={
                 <ProtectedRoute>
                   <Parts />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/service-tickets" 
+            <Route
+              path="/service-tickets"
               element={
                 <ProtectedRoute>
                   <ServiceTickets />
                 </ProtectedRoute>
-              } 
+              }
             />
-            
-            {/* Fallback Route */}
-            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
-        </div>
-        
-        {authenticated && <Footer />}
+        </main>
       </div>
+
+      {isAuthenticated() && <Footer />}
+    </div>
+  );
+};
+
+function App() {
+  return (
+    <BrowserRouter>
+      <AppContent />
     </BrowserRouter>
   );
 }

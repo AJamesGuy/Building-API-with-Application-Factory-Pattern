@@ -1,0 +1,255 @@
+/* ServiceTickets.css - Styles for Service Tickets page */
+:root {
+  --primary-color: #0B5351;
+  --bg-color: #092327;
+  --accent-color: #6A7062;
+  --text-white: #ffffff;
+  --text-gray-light: #d1d5db;
+  --text-gray-dark: #9ca3af;
+  --card-bg: #1f2937;
+  --border-color: #374151;
+  --warning-color: #d97706;
+  --success-color: #059669;
+}
+
+.service-tickets-container {
+  min-height: 100vh;
+  background-color: var(--bg-color);
+  padding: 2rem 1rem;
+}
+
+.service-tickets-header {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+@media (min-width: 768px) {
+  .service-tickets-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.service-tickets-header-content h1 {
+  font-size: 2.25rem;
+  font-weight: bold;
+  color: var(--text-white);
+  margin-bottom: 0.5rem;
+}
+
+.service-tickets-header-content p {
+  color: var(--text-gray-light);
+}
+
+.add-ticket-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--primary-color);
+  color: var(--text-white);
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.add-ticket-btn:hover {
+  background-color: var(--accent-color);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.add-ticket-btn svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-right: 0.5rem;
+}
+
+.stats-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background-color: var(--card-bg);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-color);
+  transition: transform 0.2s ease-in-out;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.stat-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stat-info h3 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-gray-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+.stat-value {
+  font-size: 2.25rem;
+  font-weight: bold;
+  color: var(--text-white);
+}
+
+.stat-icon {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-white);
+}
+
+.stat-icon.primary {
+  background-color: var(--primary-color);
+}
+
+.stat-icon.accent {
+  background-color: var(--accent-color);
+}
+
+.stat-icon.warning {
+  background-color: var(--warning-color);
+}
+
+.stat-icon.success {
+  background-color: var(--success-color);
+}
+
+.tickets-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .tickets-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1280px) {
+  .tickets-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.ticket-card {
+  background-color: var(--card-bg);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-color);
+  transition: all 0.2s ease-in-out;
+}
+
+.ticket-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.loading-skeleton {
+  background-color: var(--card-bg);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-color);
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.skeleton-line {
+  height: 1rem;
+  background-color: #374151;
+  border-radius: 0.25rem;
+  margin-bottom: 1rem;
+}
+
+.skeleton-line:last-child {
+  width: 75%;
+  margin-bottom: 0;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.empty-state {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  text-align: center;
+}
+
+.empty-state-icon {
+  width: 4rem;
+  height: 4rem;
+  color: var(--text-gray-dark);
+  margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-gray-dark);
+  margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+  color: var(--text-gray-light);
+  max-width: 28rem;
+}
+
+@media (max-width: 640px) {
+  .service-tickets-container {
+    padding: 1rem;
+  }
+
+  .service-tickets-header-content h1 {
+    font-size: 1.875rem;
+  }
+
+  .stats-section {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-content {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .stat-icon {
+    margin-top: 1rem;
+  }
+}

@@ -1,12 +1,7 @@
-from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy import String, Date, Integer, Text, Float, ForeignKey, Column, Table
 from datetime import date
-
-app = Flask(__name__)
-
-app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///app.db"
 
 # Base class inherits from DeclarativeBase for models set-up
 class Base(DeclarativeBase):
@@ -14,8 +9,6 @@ class Base(DeclarativeBase):
 
 # SQLAlchemy instantiated as db object
 db = SQLAlchemy(model_class = Base)
- 
-db.init_app(app)
 
 mechanics_service = Table(
     "mechanics_service",

@@ -6,7 +6,7 @@ from .blueprints.customers import customers_bp
 from .blueprints.service_tickets import service_tickets_bp
 from .blueprints.parts import parts_bp
 from flask_swagger_ui import get_swaggerui_blueprint
-# from flask_cors import CORS
+from flask_cors import CORS
 
 SWAGGER_URL = '/api/docs' #URL for exposing my swagger ui
 API_URL = '/static/swagger.yaml'
@@ -22,7 +22,7 @@ def create_app(config_name):
     ma.init_app(app)
     limiter.init_app(app)
     cache.init_app(app)
-    # CORS(app)
+    CORS(app)
 
     app.register_blueprint(mechanics_bp, url_prefix='/mechanics')
     app.register_blueprint(customers_bp, url_prefix='/customers')

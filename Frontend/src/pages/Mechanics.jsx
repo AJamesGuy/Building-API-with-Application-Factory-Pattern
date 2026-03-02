@@ -14,6 +14,7 @@ const Mechanics = () => {
   const [selectedMechanic, setSelectedMechanic] = useState(null);
   const [activeTab, setActiveTab] = useState('list');
   const [loading, setLoading] = useState(false);
+  const loggedInMechanicId = localStorage.getItem('mechanicId');
 
   useEffect(() => {
     fetchMechanics();
@@ -83,6 +84,53 @@ const Mechanics = () => {
     setShowModal(true);
   };
 
+  const openMyAccountModal = async () => {
+    try {
+      const mechanicIdStr = localStorage.getItem('mechanicId');
+      console.log('Mechanic ID from localStorage:', mechanicIdStr);
+      
+      if (!mechanicIdStr) {
+        console.error('No mechanic ID found in localStorage');
+        alert('Please log in to access your account');
+        return;
+      }
+      
+      const mechanicId = parseInt(mechanicIdStr);
+      
+      // Try to find in already loaded mechanics
+      let myMechanic = mechanics.find(m => m.id === mechanicId);
+      
+      // If not found and mechanics array is empty or doesn't have our mechanic, fetch fresh data
+      if (!myMechanic && mechanics.length === 0) {
+        console.log('Mechanics data not loaded yet, fetching...');
+        setLoading(true);
+        try {
+          const { data } = await getMechanics();
+          setMechanics(data || []);
+          myMechanic = (data || []).find(m => m.id === mechanicId);
+        } catch (err) {
+          console.error('Error fetching mechanics:', err);
+          setLoading(false);
+          return;
+        }
+        setLoading(false);
+      }
+      
+      if (myMechanic) {
+        console.log('Found mechanic:', myMechanic);
+        setSelectedMechanic(myMechanic);
+        setShowModal(true);
+      } else {
+        console.error('Mechanic not found with ID:', mechanicId);
+        console.log('Available mechanics:', mechanics.map(m => ({ id: m.id, name: m.first_name })));
+        alert('Could not find your mechanic account');
+      }
+    } catch (err) {
+      console.error('Error opening my account:', err);
+      alert('Error opening your account');
+    }
+  };
+
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#092327' }}>
       <div className="container px-4 py-8">
@@ -91,22 +139,24 @@ const Mechanics = () => {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
               <h1 className="text-4xl font-bold text-white mb-2">Mechanics</h1>
-              <p className="text-gray-300">Manage your mechanic team</p>
+              <p className="text-gray-300">View mechanics list and rankings</p>
             </div>
-            <button
-              onClick={openCreateModal}
-              className="px-6 py-3 rounded-lg font-semibold text-white transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-              style={{ backgroundColor: '#0B5351' }}
-              onMouseEnter={(e) => e.target.style.backgroundColor = '#6A7062'}
-              onMouseLeave={(e) => e.target.style.backgroundColor = '#0B5351'}
-            >
-              <span className="flex items-center">
-                <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                </svg>
-                Add Mechanic
-              </span>
-            </button>
+            <div className="flex gap-3">
+              <button
+                onClick={openMyAccountModal}
+                className="px-6 py-3 rounded-lg font-semibold text-white transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                style={{ backgroundColor: '#6A7062' }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = '#7A8072'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = '#6A7062'}
+              >
+                <span className="flex items-center">
+                  <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                  My Account
+                </span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -155,8 +205,8 @@ const Mechanics = () => {
                 <MechanicCard
                   key={mechanic.id}
                   mechanic={mechanic}
-                  onEdit={() => openEditModal(mechanic)}
-                  onDelete={() => handleDelete(mechanic.id)}
+                  onEdit={null}
+                  onDelete={null}
                 />
               ))
             ) : (
@@ -194,15 +244,36 @@ const Mechanics = () => {
 
         {/* Modal */}
         <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
-          <div className="p-6">
-            <h2 className="text-2xl font-bold text-white mb-6">
-              {selectedMechanic ? 'Edit Mechanic' : 'Add New Mechanic'}
+          <div className="p-8">
+            <h2 className="text-2xl font-bold text-white mb-8">
+              {selectedMechanic ? 'Edit Your Account' : 'Add New Mechanic'}
             </h2>
-            <MechanicForm
-              initialData={selectedMechanic}
-              onSubmit={selectedMechanic ? handleUpdate : handleCreate}
-              onCancel={() => setShowModal(false)}
-            />
+            {selectedMechanic ? (
+              <div>
+                <MechanicForm
+                  initialData={selectedMechanic}
+                  onSubmit={handleUpdate}
+                  onCancel={() => setShowModal(false)}
+                />
+                <div className="mt-6 pt-6 border-t border-gray-600">
+                  <button
+                    onClick={() => {
+                      if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.'))
+                        handleDelete(selectedMechanic.id);
+                    }}
+                    className="w-full bg-red-600 hover:bg-red-700 text-white py-3 px-6 rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
+                  >
+                    Delete My Account
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <MechanicForm
+                initialData={null}
+                onSubmit={handleCreate}
+                onCancel={() => setShowModal(false)}
+              />
+            )}
           </div>
         </Modal>
       </div>

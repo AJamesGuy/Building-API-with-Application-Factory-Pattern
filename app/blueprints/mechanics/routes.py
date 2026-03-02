@@ -1,5 +1,5 @@
 from . import mechanics_bp
-from .schemas import mechanic_schema, mechanics_schema, login_schema
+from .schemas import mechanic_schema, mechanic_update_schema, mechanics_schema, login_schema
 from flask import request, jsonify
 from marshmallow import ValidationError
 from app.models import Mechanic, db
@@ -22,7 +22,10 @@ def login():
         token = encode_token(mechanic.id)
         return jsonify({
             "message": f"Welcome {mechanic.first_name}",
-            "token": token
+            "token": token,
+            "id": mechanic.id,
+            "first_name": mechanic.first_name,
+            "last_name": mechanic.last_name
         }), 200
     else:
         return jsonify({"message": "Wrong email or password"}), 401
@@ -58,16 +61,25 @@ def get_mechanics():
 @mechanics_bp.route('/<int:mechanic_id>/update-mechanic', methods=['PUT'])
 @token_required
 def update_mechanic(mechanic_id):
+    # Ensure the mechanic can only update their own account
+    if request.logged_in_user_id != mechanic_id:
+        return jsonify({"error": "Unauthorized - you can only update your own account"}), 403
+    
     mechanic = db.session.get(Mechanic, mechanic_id) # Get mechanic from db using int:mechanic_id specified in request.
     if not mechanic:
         return jsonify({"error": "Mechanic not found"}), 404
 
     try:
-        data = mechanic_schema.load(request.json)
+        data = mechanic_update_schema.load(request.json)
     except ValidationError as err:
         return jsonify(err.messages), 400
     
-    data['password'] = generate_password_hash(data['password'])
+    # Only hash password if it's provided
+    if 'password' in data and data['password']:
+        data['password'] = generate_password_hash(data['password'])
+    elif 'password' in data:
+        # Remove empty password from data to avoid updating it
+        del data['password']
 
     for key, value in data.items():
         setattr(mechanic, key, value) # Set each updated attribute for mechanic with route specified mechanic id from the deserialized json object saved in the data variable

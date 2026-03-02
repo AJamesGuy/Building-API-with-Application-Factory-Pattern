@@ -14,7 +14,19 @@ class MechanicSchema(ma.SQLAlchemySchema):
     salary = fields.Float(allow_none=True)
     password = fields.Str(required=True)
 
+class MechanicUpdateSchema(ma.SQLAlchemySchema):
+    class Meta:
+        model = Mechanic
+    id = fields.Integer(dump_only=True)
+    first_name = fields.Str(required=True)
+    last_name = fields.Str(required=True)
+    email = fields.Email(required=True)
+    address = fields.Str(required=True)
+    schedule = fields.Str(required=True)
+    salary = fields.Float(allow_none=True)
+    password = fields.Str(required=False)
 
 mechanic_schema = MechanicSchema()
+mechanic_update_schema = MechanicUpdateSchema()
 mechanics_schema = MechanicSchema(many=True)
 login_schema = MechanicSchema(exclude=['first_name', 'last_name', 'address', 'schedule', 'salary'])

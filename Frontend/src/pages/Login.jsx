@@ -17,9 +17,18 @@ const Login = () => {
         ? await loginCustomer(credentials)
         : await loginMechanic(credentials);
 
-      // Store token and role in localStorage
+      // Store token, role, and user ID in localStorage
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('role', isCustomer ? 'customer' : 'mechanic');
+      
+      // Store user ID for the logged-in user
+      if (response.data.id) {
+        if (isCustomer) {
+          localStorage.setItem('customerId', response.data.id);
+        } else {
+          localStorage.setItem('mechanicId', response.data.id);
+        }
+      }
 
       // Navigate to dashboard
       navigate('/dashboard');

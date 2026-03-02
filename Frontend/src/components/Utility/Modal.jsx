@@ -32,9 +32,9 @@ const Modal = ({ isOpen, onClose, children }) => {
         onClick={onClose}
       ></div>
 
-      {/* Modal Container */}
-      <div className="flex min-h-full items-center justify-center p-4">
-        <div className="relative w-full max-w-2xl transform overflow-hidden rounded-2xl bg-gray-800 shadow-2xl transition-all border border-gray-700">
+      {/* Modal Container - Positioned to leave space for footer */}
+      <div className="flex min-h-full items-start justify-center p-4 pb-20">
+        <div className="relative w-full max-w-2xl transform overflow-hidden rounded-2xl bg-gray-800 shadow-2xl transition-all border border-gray-700 mt-8">
           {/* Close Button */}
           <button
             onClick={onClose}
@@ -46,8 +46,8 @@ const Modal = ({ isOpen, onClose, children }) => {
             </svg>
           </button>
 
-          {/* Modal Content */}
-          <div className="max-h-[90vh] overflow-y-auto">
+          {/* Modal Content - Increased height for more scrolling space */}
+          <div className="max-h-[75vh] overflow-y-auto">
             {children}
           </div>
         </div>

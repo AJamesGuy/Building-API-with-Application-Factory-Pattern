@@ -45,6 +45,7 @@ export const searchCustomer = (email) => api.get('/customers/search-customer', {
 export const loginMechanic = (credentials) => api.post('/mechanics/login', credentials);
 export const createMechanic = (data) => api.post('/mechanics/create-mechanic', data);
 export const getMechanics = () => api.get('/mechanics/read-mechanics');
+export const getMechanicById = (id) => api.get(`/mechanics/read-mechanics?id=${id}`);
 export const updateMechanic = (id, data) => api.put(`/mechanics/${id}/update-mechanic`, data);
 export const deleteMechanic = (id) => api.delete(`/mechanics/${id}/delete-mechanic`);
 export const getMechanicTickets = (id) => api.get(`/mechanics/${id}/my-tickets`);

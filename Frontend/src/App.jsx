@@ -32,6 +32,8 @@ const AppContent = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('role');
     localStorage.removeItem('mechanicData');
+    localStorage.removeItem('mechanicId');
+    localStorage.removeItem('customerId');
     setMechanicData(null);
   };
 

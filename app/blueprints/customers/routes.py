@@ -5,6 +5,7 @@ from marshmallow import ValidationError
 from app.models import Customer, db
 from app.extensions import limiter, cache
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from werkzeug.security import check_password_hash, generate_password_hash
 from app.util.auth import encode_token, token_required
 
@@ -18,12 +19,21 @@ def create_customer():
         data = customer_schema.load(request.json)
     except ValidationError as err:
         return jsonify(err.messages), 400
-    data['password'] = generate_password_hash(data['password'])
 
-    new_customer = Customer(**data)
-    db.session.add(new_customer)
-    db.session.commit()
-    return customer_schema.jsonify(new_customer), 201
+    try:
+        data['password'] = generate_password_hash(data['password'])
+
+        new_customer = Customer(**data)
+        db.session.add(new_customer)
+        db.session.commit()
+        return customer_schema.jsonify(new_customer), 201
+    except IntegrityError as e:
+        db.session.rollback()
+        return jsonify({"message": "A customer with this email already exists."}), 409
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error creating customer: {type(e).__name__}: {e}")
+        return jsonify({"message": "An error occurred while creating the customer."}), 500
 
 @customers_bp.route('/login', methods=['POST'])
 def login():

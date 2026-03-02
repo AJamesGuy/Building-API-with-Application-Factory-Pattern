@@ -20,7 +20,28 @@ const CustomerSignup = () => {
       }, 2000);
     } catch (error) {
       console.error('Signup failed:', error);
-      setError(error.response?.data?.message || 'Signup failed. Please try again.');
+      console.error('Error response:', error.response);
+      console.error('Error data:', error.response?.data);
+      
+      // Handle different error types
+      if (error.response?.status === 409) {
+        setError(error.response.data?.message || 'A customer with this email already exists.');
+      } else if (error.response?.status === 400) {
+        // Validation errors
+        const validationErrors = error.response.data;
+        if (typeof validationErrors === 'object') {
+          const errorMessages = Object.values(validationErrors).flat();
+          setError(errorMessages.join(', '));
+        } else {
+          setError(validationErrors || 'Please check your input and try again.');
+        }
+      } else if (error.response?.data?.message) {
+        setError(error.response.data.message);
+      } else if (!error.response) {
+        setError('Network error. Please check your connection and try again.');
+      } else {
+        setError('Signup failed. Please try again.');
+      }
     }
   };
 

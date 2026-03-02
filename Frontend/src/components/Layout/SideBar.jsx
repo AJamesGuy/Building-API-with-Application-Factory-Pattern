@@ -14,9 +14,9 @@ const SideBar = () => {
   ];
 
   return (
-    <div className="bg-gray-100 w-64 h-full shadow-lg">
+    <div className="bg-gray-800 w-64 h-screen shadow-lg border-r border-gray-700 fixed left-0 top-16 z-40">
       <div className="p-6">
-        <h2 className="text-lg font-semibold text-gray-800 mb-6">Navigation</h2>
+        <h2 className="text-lg font-semibold text-white mb-6">Navigation</h2>
         <nav className="space-y-2">
           {menuItems.map((item) => (
             <Link
@@ -24,8 +24,8 @@ const SideBar = () => {
               to={item.path}
               className={`flex items-center px-4 py-3 rounded-lg transition duration-200 ${
                 location.pathname === item.path
-                  ? 'bg-blue-600 text-white shadow-md'
-                  : 'text-gray-700 hover:bg-gray-200 hover:text-gray-900'
+                  ? 'bg-teal-600 text-white shadow-md'
+                  : 'text-gray-300 hover:bg-gray-700 hover:text-white'
               }`}
             >
               <span className="mr-3 text-lg">{item.icon}</span>

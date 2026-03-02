@@ -42,7 +42,7 @@ const AppContent = () => {
       <div className="flex">
         {isAuthenticated() && <SideBar />}
 
-        <main className={`flex-1 ${isAuthenticated() ? 'ml-0' : ''} p-6`}>
+        <main className={`flex-1 ${isAuthenticated() ? 'ml-64 pt-20' : ''} p-6`}>
           <Routes>
             {/* Public Routes */}
             <Route path="/login" element={<Login />} />

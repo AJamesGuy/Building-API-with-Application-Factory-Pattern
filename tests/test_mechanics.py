@@ -125,9 +125,9 @@ class TestMechanic(unittest.TestCase):
 
         headers = {"Authorization": "Bearer " + self.token}
 
-        # Mechanic not found
+        # Attempting to update another mechanic's account (403 - Unauthorized)
         response = self.client.put('/mechanics/2/update-mechanic', json=mechanic_payload, headers=headers)
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 403)
 
         
     def test_delete_mechanic(self):

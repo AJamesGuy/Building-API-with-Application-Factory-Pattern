@@ -24,6 +24,29 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Response interceptor for debugging
+api.interceptors.response.use(
+  (response) => {
+    console.log('API Response:', {
+      url: response.config.url,
+      method: response.config.method,
+      status: response.status,
+      data: response.data
+    });
+    return response;
+  },
+  (error) => {
+    console.error('API Error:', {
+      url: error.config?.url,
+      method: error.config?.method,
+      status: error.response?.status,
+      data: error.response?.data,
+      message: error.message
+    });
+    return Promise.reject(error);
+  }
+);
+
 // Authentication helper
 export const isAuthenticated = () => {
   const token = localStorage.getItem('token');

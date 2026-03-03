@@ -13,27 +13,62 @@ const Login = () => {
   const handleLogin = async (credentials) => {
     try {
       setError('');
+      console.log('Attempting login with role:', isCustomer ? 'customer' : 'mechanic');
+      
       const response = isCustomer
         ? await loginCustomer(credentials)
         : await loginMechanic(credentials);
+
+      console.log('Full response object:', response);
+      console.log('Response data:', response.data);
+      console.log('Response status:', response.status);
+      console.log('Response keys:', Object.keys(response.data));
+
+      // Check if we have token
+      if (!response.data.token) {
+        console.error('No token in response!');
+        setError('Login failed: No token received');
+        return;
+      }
 
       // Store token, role, and user ID in localStorage
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('role', isCustomer ? 'customer' : 'mechanic');
       
+      console.log('Token stored, user role:', isCustomer ? 'customer' : 'mechanic');
+      console.log('Response data explicitly:', {
+        token: response.data.token,
+        id: response.data.id,
+        message: response.data.message,
+        first_name: response.data.first_name,
+        last_name: response.data.last_name
+      });
+
       // Store user ID for the logged-in user
       if (response.data.id) {
+        console.log('Storing user ID:', response.data.id, 'as', isCustomer ? 'customerId' : 'mechanicId');
         if (isCustomer) {
           localStorage.setItem('customerId', response.data.id);
         } else {
           localStorage.setItem('mechanicId', response.data.id);
         }
+      } else {
+        console.warn('⚠️ NO ID in login response!');
+        console.warn('Full response data:', JSON.stringify(response.data, null, 2));
       }
+
+      console.log('✓ localStorage after login:', {
+        token: localStorage.getItem('token') ? '✓ set' : '✗ not set',
+        role: localStorage.getItem('role'),
+        customerId: localStorage.getItem('customerId'),
+        mechanicId: localStorage.getItem('mechanicId')
+      });
 
       // Navigate to dashboard
       navigate('/dashboard');
     } catch (error) {
-      console.error('Login failed:', error);
+      console.error('❌ Login failed:', error);
+      console.error('Error response:', error.response);
       setError(error.response?.data?.message || 'Login failed. Please check your credentials.');
     }
   };

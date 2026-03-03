@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 // Pages
 import Login from './pages/Login';
@@ -27,6 +27,20 @@ const ProtectedRoute = ({ children }) => {
 // Main App Content Component
 const AppContent = () => {
   const [mechanicData, setMechanicData] = useState(null);
+  const [isAuth, setIsAuth] = useState(isAuthenticated());
+
+  useEffect(() => {
+    // Check authentication on mount
+    setIsAuth(isAuthenticated());
+    
+    // Listen for storage changes (login/logout from other tab or window)
+    const handleStorageChange = () => {
+      setIsAuth(isAuthenticated());
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -35,16 +49,26 @@ const AppContent = () => {
     localStorage.removeItem('mechanicId');
     localStorage.removeItem('customerId');
     setMechanicData(null);
+    setIsAuth(false);
   };
+
+  // Update auth state when navigating (to catch login redirects)
+  useEffect(() => {
+    const checkAuth = setInterval(() => {
+      setIsAuth(isAuthenticated());
+    }, 100);
+    
+    return () => clearInterval(checkAuth);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {isAuthenticated() && <NavBar mechanic={mechanicData} onLogout={handleLogout} />}
+      {isAuth && <NavBar mechanic={mechanicData} onLogout={handleLogout} />}
 
       <div className="flex">
-        {isAuthenticated() && <SideBar />}
+        {isAuth && <SideBar />}
 
-        <main className={`flex-1 ${isAuthenticated() ? 'ml-64 pt-20' : ''} p-6`}>
+        <main className={`flex-1 ${isAuth ? 'ml-64 pt-20' : ''} p-6`}>
           <Routes>
             {/* Public Routes */}
             <Route path="/login" element={<Login />} />
@@ -104,7 +128,7 @@ const AppContent = () => {
         </main>
       </div>
 
-      {isAuthenticated() && <Footer />}
+      {isAuth && <Footer />}
     </div>
   );
 };

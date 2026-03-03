@@ -45,8 +45,13 @@ def login():
 
     if customer and check_password_hash(customer.password, data['password']):
         token = encode_token(customer.id)
-        return jsonify({"message": f"Welcome {customer.first_name}!",
-                        "token": token}), 200
+        return jsonify({
+            "message": f"Welcome {customer.first_name}!",
+            "token": token,
+            "id": customer.id,
+            "first_name": customer.first_name,
+            "last_name": customer.last_name
+        }), 200
     return jsonify({"error": "Wrong email or password."})    
 
 # read all customers

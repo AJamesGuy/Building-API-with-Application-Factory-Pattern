@@ -1,6 +1,6 @@
 // src/pages/Mechanics.jsx
 import React, { useState, useEffect } from 'react';
-import { getMechanics, createMechanic, updateMechanic, deleteMechanic } from '../services/api';
+import { getMechanics, createMechanic, updateMechanic, deleteMechanic, getMechanicRankings } from '../services/api';
 import MechanicForm from '../components/Form/MechanicForm';
 import MechanicCard from '../components/Display/MechanicCard';
 import MechanicRankingCard from '../components/Display/MechanicRankingCard';

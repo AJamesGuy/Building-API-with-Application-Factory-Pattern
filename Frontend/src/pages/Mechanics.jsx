@@ -1,5 +1,6 @@
 // src/pages/Mechanics.jsx
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getMechanics, createMechanic, updateMechanic, deleteMechanic, getMechanicRankings } from '../services/api';
 import MechanicForm from '../components/Form/MechanicForm';
 import MechanicCard from '../components/Display/MechanicCard';
@@ -8,6 +9,7 @@ import Modal from '../components/Utility/Modal';
 import '../styles/Mechanics.css';
 
 const Mechanics = () => {
+  const navigate = useNavigate();
   const [mechanics, setMechanics] = useState([]);
   const [rankings, setRankings] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -20,6 +22,12 @@ const Mechanics = () => {
     fetchMechanics();
     fetchRankings();
   }, []);
+
+  // Debug state changes
+  useEffect(() => {
+    console.log('showModal state changed:', showModal);
+    console.log('selectedMechanic state changed:', selectedMechanic);
+  }, [showModal, selectedMechanic]);
 
   const fetchMechanics = async () => {
     setLoading(true);
@@ -67,7 +75,17 @@ const Mechanics = () => {
     if (window.confirm('Are you sure you want to delete this mechanic?')) {
       try {
         await deleteMechanic(id);
-        fetchMechanics();
+        // Check if the deleted mechanic is the current logged-in user
+        const loggedInMechanicId = localStorage.getItem('mechanicId');
+        if (loggedInMechanicId && parseInt(loggedInMechanicId) === id) {
+          // Current user deleted their own account
+          localStorage.removeItem('mechanicId');
+          alert('Your account has been deleted. You will be logged out.');
+          navigate('/login');
+        } else {
+          // A different mechanic was deleted
+          fetchMechanics();
+        }
       } catch (err) {
         console.error('Error deleting mechanic:', err);
       }
@@ -118,8 +136,14 @@ const Mechanics = () => {
       
       if (myMechanic) {
         console.log('Found mechanic:', myMechanic);
+        console.log('Before setState - showModal:', showModal, 'selectedMechanic:', selectedMechanic);
         setSelectedMechanic(myMechanic);
         setShowModal(true);
+        console.log('After setState called - but state may not update yet');
+        // Force a re-render check
+        setTimeout(() => {
+          console.log('Delayed check - this state info is stale, but checking...');
+        }, 100);
       } else {
         console.error('Mechanic not found with ID:', mechanicId);
         console.log('Available mechanics:', mechanics.map(m => ({ id: m.id, name: m.first_name })));

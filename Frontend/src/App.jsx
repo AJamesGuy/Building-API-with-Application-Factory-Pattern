@@ -1,6 +1,9 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 
+// Global Styles
+import './styles/tailwind-to-css-replacement.css';
+
 // Pages
 import Login from './pages/Login';
 import CustomerSignup from './pages/CustomerSignup';
